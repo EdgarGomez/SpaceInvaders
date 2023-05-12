@@ -2,12 +2,16 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private EnemyController enemyController;
+    public EnemyController enemyController;
+    public GameObject turboFireLeft;
+    public GameObject turboFireRight;
 
-    private void Start()
+    void Start()
     {
-        enemyController = transform.parent.GetComponent<EnemyController>();
+        turboFireLeft.SetActive(false);
+        turboFireRight.SetActive(false);
     }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -15,5 +19,18 @@ public class Enemy : MonoBehaviour
         {
             enemyController.HandleBorderCollision();
         }
+    }
+
+    public void ShowTurboFire()
+    {
+        turboFireLeft.SetActive(true);
+        turboFireRight.SetActive(true);
+    }
+
+    public void HideTurboFire()
+    {
+        turboFireLeft.SetActive(false);
+        turboFireRight.SetActive(false);
+
     }
 }

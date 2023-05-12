@@ -17,9 +17,9 @@ public class PlayerController : MonoBehaviour
 
         GetComponent<Rigidbody2D>().velocity = movement * speed;
 
-        // Prevent player from leaving screen
+
         var pos = transform.position;
-        pos.x = Mathf.Clamp(pos.x, -8, 8); // adjust these values as per your screen size
+        pos.x = Mathf.Clamp(pos.x, -8, 8);
         transform.position = pos;
 
         if (Input.GetKey(KeyCode.Space) && Time.time > nextFire)
