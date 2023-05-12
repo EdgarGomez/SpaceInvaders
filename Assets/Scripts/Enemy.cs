@@ -5,6 +5,8 @@ public class Enemy : MonoBehaviour
     public EnemyController enemyController;
     public GameObject turboFireLeft;
     public GameObject turboFireRight;
+    public GameObject enemyBulletPrefab;
+    public float bulletSpeed = 5f;
 
     void Start()
     {
@@ -12,6 +14,12 @@ public class Enemy : MonoBehaviour
         turboFireRight.SetActive(false);
     }
 
+    public void Shoot()
+    {
+        GameObject bullet = Instantiate(enemyBulletPrefab, transform.position, enemyBulletPrefab.transform.rotation);
+        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+        rb.velocity = Vector2.down * bulletSpeed;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {

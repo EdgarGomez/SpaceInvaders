@@ -3,6 +3,7 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
     public float speed = 10f;
+    public GameObject explosionPrefab;
 
     void Update()
     {
@@ -13,6 +14,8 @@ public class BulletController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
+            GameManager.instance.IncrementEnemies();
+            Instantiate(explosionPrefab, other.gameObject.transform.position, Quaternion.identity);
             Destroy(other.gameObject);
             Destroy(gameObject);
         }

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -19,12 +20,15 @@ public class EnemyController : MonoBehaviour
     private Transform rightmostEnemy;
     private bool preparingNewWave = false;
 
+    private float shootingInterval = 1f;
+
     void Start()
     {
         float screenHalfWidth = Camera.main.aspect * Camera.main.orthographicSize;
         minX = -screenHalfWidth + enemyHalfWidth;
         maxX = screenHalfWidth - enemyHalfWidth;
         SpawnEnemies();
+        StartCoroutine(ShootingRoutine());
     }
 
     void Update()
@@ -123,11 +127,13 @@ public class EnemyController : MonoBehaviour
 
     IEnumerator StartNextWave()
     {
+        GameManager.instance.IncrementWaves();
         yield return new WaitForSeconds(waveCooldown);
         speed += difficultyIncrease;
         stepDown += difficultyIncrease;
         // Reset position of enemyHolder
         enemyHolder.transform.position = new Vector3(0, 4, 0);
+        shootingInterval = Mathf.Max(0.2f, shootingInterval - 0.1f); // Make sure shootingInterval doesn't go below 0.2
         SpawnEnemies();
         preparingNewWave = false; // Reset preparingNewWave to false after spawning enemies
     }
@@ -149,6 +155,41 @@ public class EnemyController : MonoBehaviour
                     enemyHalfWidth = enemy.GetComponent<SpriteRenderer>().bounds.extents.x;
                 }
             }
+        }
+    }
+
+    private List<Enemy> GetShootingEnemies()
+    {
+        List<Enemy> shootingEnemies = new List<Enemy>();
+        for (int i = 0; i < 5; i++) // For each column of enemies
+        {
+            Enemy lowestEnemyInColumn = null;
+            foreach (Transform child in enemyHolder.transform)
+            {
+                if ((int)child.position.x == i - 2 && (lowestEnemyInColumn == null || child.position.y < lowestEnemyInColumn.transform.position.y))
+                {
+                    lowestEnemyInColumn = child.GetComponent<Enemy>();
+                }
+            }
+            if (lowestEnemyInColumn != null)
+            {
+                shootingEnemies.Add(lowestEnemyInColumn);
+            }
+        }
+        return shootingEnemies;
+    }
+
+    IEnumerator ShootingRoutine()
+    {
+        while (true)
+        {
+            List<Enemy> shootingEnemies = GetShootingEnemies();
+            if (shootingEnemies.Count > 0)
+            {
+                Enemy shootingEnemy = shootingEnemies[Random.Range(0, shootingEnemies.Count)];
+                shootingEnemy.Shoot();
+            }
+            yield return new WaitForSeconds(shootingInterval + Random.Range(-0.2f, 0.2f)); // Add some randomness to the shooting interval
         }
     }
 
