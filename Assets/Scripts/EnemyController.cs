@@ -128,6 +128,7 @@ public class EnemyController : MonoBehaviour
     IEnumerator StartNextWave()
     {
         GameManager.instance.IncrementWaves();
+        StartCoroutine(GameManager.instance.WaveCountdown());
         yield return new WaitForSeconds(waveCooldown);
         speed += difficultyIncrease;
         stepDown += difficultyIncrease;

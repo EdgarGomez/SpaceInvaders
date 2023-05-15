@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,10 +9,22 @@ public class GameManager : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text waveText;
     public TMP_Text enemiesText;
+    public TMP_Text overScoreText;
+    public TMP_Text overWaveText;
+    public TMP_Text overEnemiesText;
+    public TMP_Text totalText;
+    public TMP_Text missileCountText;
+    public TMP_Text shieldsText;
+    public TMP_Text countdownText;
+    public GameObject gameOverPanel;
 
     private float score;
     private int waves;
     private int enemies;
+
+    private bool escPressed = false;
+    public bool isPaused = false;
+    public GameObject pausePanel;
 
     void Awake()
     {
@@ -36,6 +48,44 @@ public class GameManager : MonoBehaviour
     {
         score += Time.deltaTime; // Increment score per time
         UpdateUI();
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!escPressed)
+            {
+
+                isPaused = !isPaused;
+                Time.timeScale = isPaused ? 0 : 1;
+                pausePanel.SetActive(isPaused);
+                escPressed = true;
+
+            }
+            else
+            {
+                escPressed = false;
+            }
+        }
+    }
+
+    public void PauseOn()
+    {
+        isPaused = !isPaused;
+        pausePanel.SetActive(isPaused);
+        Time.timeScale = isPaused ? 0 : 1;
+    }
+
+    public IEnumerator WaveCountdown()
+    {
+        countdownText.gameObject.SetActive(true);
+        int countdown = 3;
+        while (countdown > 0)
+        {
+            countdownText.text = "Next Wave " + countdown.ToString();
+            yield return new WaitForSeconds(1);
+            countdown--;
+        }
+        countdownText.text = "GO!";
+        yield return new WaitForSeconds(1);
+        countdownText.gameObject.SetActive(false);
     }
 
     public void IncrementWaves()
@@ -48,6 +98,16 @@ public class GameManager : MonoBehaviour
         enemies++;
     }
 
+    public void UpdateMissileCount(int count) // Add this method
+    {
+        missileCountText.text = count.ToString();
+    }
+
+    public void UpdateShields(int shields)
+    {
+        shieldsText.text = shields.ToString();
+    }
+
     private void UpdateUI()
     {
         scoreText.text = "Score: " + score.ToString("0");
@@ -55,9 +115,37 @@ public class GameManager : MonoBehaviour
         enemiesText.text = enemies.ToString();
     }
 
-    // Call this when the player is destroyed or game over condition is met
     public void GameOver()
     {
-        // Game over logic
+        Time.timeScale = 0;
+        gameOverPanel.SetActive(true);
+
+        overScoreText.text = $"Score: {(int)score}";
+        overWaveText.text = $"Waves: {waves}x20={waves * 20}";
+        overEnemiesText.text = $"Enemies: {enemies}x10={enemies * 10}";
+
+        int totalScore = (int)(score + waves * 20 + enemies * 10);
+
+        StartCoroutine(AnimateScore(totalScore));
+    }
+
+    IEnumerator AnimateScore(int totalScore)
+    {
+        int currentScore = 0;
+        float timer = 0;
+
+        // Animation duration in seconds
+        float duration = 2.0f;
+
+        while (currentScore < totalScore)
+        {
+            currentScore = (int)Mathf.Lerp(0, totalScore, timer / duration);
+            totalText.text = $"Total: {currentScore}";
+
+            timer += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        totalText.text = $"Total: {totalScore}";
     }
 }
