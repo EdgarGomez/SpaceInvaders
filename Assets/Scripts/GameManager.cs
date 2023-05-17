@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
-using System.IO;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -99,8 +99,8 @@ public class GameManager : MonoBehaviour
         int playerScore = totalScore;
 
         DataManager.instance.SavePlayerData(playerName, playerScore);
-        scoreInputField.enabled = false;
-        saveScoreButton.enabled = false;
+        scoreInputField.gameObject.SetActive(false);
+        saveScoreButton.gameObject.SetActive(false);
     }
 
     public void IncrementWaves()
@@ -161,5 +161,14 @@ public class GameManager : MonoBehaviour
         }
 
         totalText.text = $"Total: {totalScore}";
+    }
+
+    public void GoToMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+    public void PlayAgain()
+    {
+        SceneManager.LoadScene("SpaceInvaders");
     }
 }

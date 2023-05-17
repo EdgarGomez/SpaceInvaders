@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -28,6 +29,16 @@ public class Enemy : MonoBehaviour
         {
             enemyController.HandleBorderCollision();
         }
+        else if (other.gameObject.CompareTag("EnemyLimit"))
+        {
+            StartCoroutine(WaitGameOver());
+        }
+    }
+
+    private IEnumerator WaitGameOver()
+    {
+        yield return new WaitForSeconds(0.5f);
+        GameManager.instance.GameOver();
     }
 
     public void ShowTurboFire()

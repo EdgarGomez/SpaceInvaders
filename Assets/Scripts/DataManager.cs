@@ -43,7 +43,6 @@ public class DataManager : MonoBehaviour
 
     public PlayerDataList LoadPlayerData()
     {
-        Debug.Log(Path.Combine(Application.persistentDataPath, "playerData.json"));
         string path = Path.Combine(Application.persistentDataPath, "playerData.json");
         if (File.Exists(path))
         {
