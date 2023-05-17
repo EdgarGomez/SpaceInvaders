@@ -1,6 +1,8 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using System.IO;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,16 +21,19 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverPanel;
 
     private float score;
-    private int waves;
+    public int waves;
     private int enemies;
+    private int totalScore = 0;
 
     private bool escPressed = false;
     public bool isPaused = false;
     public GameObject pausePanel;
 
+    public TMP_InputField scoreInputField;
+    public Button saveScoreButton;
+
     void Awake()
     {
-        // Singleton pattern
         if (instance == null)
         {
             instance = this;
@@ -38,7 +43,6 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // Initialization
         score = 0;
         waves = 1;
         enemies = 0;
@@ -46,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        score += Time.deltaTime; // Increment score per time
+        score += Time.deltaTime;
         UpdateUI();
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -88,6 +92,17 @@ public class GameManager : MonoBehaviour
         countdownText.gameObject.SetActive(false);
     }
 
+    public void SavePlayerScore()
+    {
+        string playerName = scoreInputField.text.Substring(0, Mathf.Min(3, scoreInputField.text.Length)).ToUpper();
+
+        int playerScore = totalScore;
+
+        DataManager.instance.SavePlayerData(playerName, playerScore);
+        scoreInputField.enabled = false;
+        saveScoreButton.enabled = false;
+    }
+
     public void IncrementWaves()
     {
         waves++;
@@ -98,7 +113,7 @@ public class GameManager : MonoBehaviour
         enemies++;
     }
 
-    public void UpdateMissileCount(int count) // Add this method
+    public void UpdateMissileCount(int count)
     {
         missileCountText.text = count.ToString();
     }
@@ -111,7 +126,7 @@ public class GameManager : MonoBehaviour
     private void UpdateUI()
     {
         scoreText.text = "Score: " + score.ToString("0");
-        waveText.text = "Waves: " + waves.ToString();
+        waveText.text = waves.ToString();
         enemiesText.text = enemies.ToString();
     }
 
@@ -124,7 +139,7 @@ public class GameManager : MonoBehaviour
         overWaveText.text = $"Waves: {waves}x20={waves * 20}";
         overEnemiesText.text = $"Enemies: {enemies}x10={enemies * 10}";
 
-        int totalScore = (int)(score + waves * 20 + enemies * 10);
+        totalScore = (int)(score + waves * 20 + enemies * 10);
 
         StartCoroutine(AnimateScore(totalScore));
     }
@@ -134,7 +149,6 @@ public class GameManager : MonoBehaviour
         int currentScore = 0;
         float timer = 0;
 
-        // Animation duration in seconds
         float duration = 2.0f;
 
         while (currentScore < totalScore)

@@ -3,9 +3,10 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public EnemyController enemyController;
-    public GameObject turboFireLeft;
-    public GameObject turboFireRight;
-    public GameObject enemyBulletPrefab;
+    [SerializeField] protected GameObject turboFireLeft;
+    [SerializeField] protected GameObject turboFireRight;
+    [SerializeField] protected GameObject enemyBulletPrefab;
+
     public float bulletSpeed = 5f;
 
     void Start()
@@ -14,7 +15,7 @@ public class Enemy : MonoBehaviour
         turboFireRight.SetActive(false);
     }
 
-    public void Shoot()
+    public virtual void Shoot()
     {
         GameObject bullet = Instantiate(enemyBulletPrefab, transform.position, enemyBulletPrefab.transform.rotation);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();

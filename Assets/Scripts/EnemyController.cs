@@ -5,11 +5,13 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     public GameObject enemyPrefab;
+    public GameObject specialEnemyPrefab;
+    public GameObject specialEnemy2Prefab;
     public GameObject enemyHolder;
     public float speed;
     public float stepDown;
     public float waveCooldown = 3f;
-    public float difficultyIncrease = 0.1f;
+    public float difficultyIncrease = 0.05f;
 
     private bool movingRight = true;
     private float enemyHalfWidth;
@@ -134,9 +136,9 @@ public class EnemyController : MonoBehaviour
         stepDown += difficultyIncrease;
         // Reset position of enemyHolder
         enemyHolder.transform.position = new Vector3(0, 4, 0);
-        shootingInterval = Mathf.Max(0.2f, shootingInterval - 0.1f); // Make sure shootingInterval doesn't go below 0.2
+        shootingInterval = Mathf.Max(0.2f, shootingInterval - 0.1f);
         SpawnEnemies();
-        preparingNewWave = false; // Reset preparingNewWave to false after spawning enemies
+        preparingNewWave = false;
     }
 
     void SpawnEnemies()
@@ -144,15 +146,34 @@ public class EnemyController : MonoBehaviour
         int lines = Random.Range(3, 5);
         for (int i = 0; i < lines; i++)
         {
+            int specialEnemyPosition = Random.Range(0, 5);
+            int specialEnemy2Position = Random.Range(0, 5);
+            while (specialEnemy2Position == specialEnemyPosition)
+            {
+                specialEnemy2Position = Random.Range(0, 5);
+            }
+
             for (int j = 0; j < 5; j++)
             {
-                GameObject enemy = Instantiate(enemyPrefab, Vector3.zero, enemyPrefab.transform.rotation, enemyHolder.transform);
-                enemy.transform.localPosition = new Vector3(-2 + j, -i, 0); // Set local position relative to enemyHolder
+                GameObject enemy;
+                if (GameManager.instance.waves >= 5 && j == specialEnemy2Position)
+                {
+                    enemy = Instantiate(specialEnemy2Prefab, Vector3.zero, specialEnemy2Prefab.transform.rotation, enemyHolder.transform);
+                }
+                else if (GameManager.instance.waves >= 3 && j == specialEnemyPosition)
+                {
+                    enemy = Instantiate(specialEnemyPrefab, Vector3.zero, specialEnemyPrefab.transform.rotation, enemyHolder.transform);
+                }
+                else
+                {
+                    enemy = Instantiate(enemyPrefab, Vector3.zero, enemyPrefab.transform.rotation, enemyHolder.transform);
+                }
+
+                enemy.transform.localPosition = new Vector3(-2 + j, -i, 0);
                 Enemy enemyScript = enemy.GetComponent<Enemy>();
                 enemyScript.enemyController = this;
-                if (i == 0 && j == 0) // If it's the first enemy
+                if (i == 0 && j == 0)
                 {
-                    // Get the half width of the enemy's sprite
                     enemyHalfWidth = enemy.GetComponent<SpriteRenderer>().bounds.extents.x;
                 }
             }
@@ -162,7 +183,7 @@ public class EnemyController : MonoBehaviour
     private List<Enemy> GetShootingEnemies()
     {
         List<Enemy> shootingEnemies = new List<Enemy>();
-        for (int i = 0; i < 5; i++) // For each column of enemies
+        for (int i = 0; i < 5; i++)
         {
             Enemy lowestEnemyInColumn = null;
             foreach (Transform child in enemyHolder.transform)
@@ -190,7 +211,7 @@ public class EnemyController : MonoBehaviour
                 Enemy shootingEnemy = shootingEnemies[Random.Range(0, shootingEnemies.Count)];
                 shootingEnemy.Shoot();
             }
-            yield return new WaitForSeconds(shootingInterval + Random.Range(-0.2f, 0.2f)); // Add some randomness to the shooting interval
+            yield return new WaitForSeconds(shootingInterval + Random.Range(-0.2f, 0.2f));
         }
     }
 

@@ -27,10 +27,10 @@ public class ShieldController : MonoBehaviour
         switch (shieldHits)
         {
             case 1:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0.66f); // Alpha set to 0.66
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0.66f);
                 break;
             case 2:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0.33f); // Alpha set to 0.33
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0.33f);
                 break;
             case 3:
                 if (player != null)

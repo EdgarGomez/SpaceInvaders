@@ -4,12 +4,19 @@ public class BulletController : MonoBehaviour
 {
     public float speed = 10f;
     public GameObject explosionPrefab;
-    public bool isMissile = false; // Add this to know if bullet is a missile
-    public float explosionRadius = 1f; // Radius in which missile will destroy enemies
+    public bool isMissile = false;
+    public float explosionRadius = 1f;
+    public Vector2 direction = Vector2.up;
+
 
     void Update()
     {
-        transform.position += transform.up * speed * Time.deltaTime;
+        transform.position += (Vector3)(direction * speed * Time.deltaTime);
+    }
+
+    public void SetDirection(Vector2 newDirection)
+    {
+        direction = newDirection;
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -18,7 +25,6 @@ public class BulletController : MonoBehaviour
         {
             GameManager.instance.IncrementEnemies();
 
-            // If this bullet is a missile, destroy nearby enemies
             if (isMissile)
             {
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
