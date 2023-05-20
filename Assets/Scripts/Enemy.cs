@@ -7,6 +7,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected GameObject turboFireLeft;
     [SerializeField] protected GameObject turboFireRight;
     [SerializeField] protected GameObject enemyBulletPrefab;
+    [SerializeField] protected AudioSource audioSource;
+    public AudioClip shootSound;
 
     public float bulletSpeed = 5f;
 
@@ -14,6 +16,7 @@ public class Enemy : MonoBehaviour
     {
         turboFireLeft.SetActive(false);
         turboFireRight.SetActive(false);
+        audioSource = GetComponent<AudioSource>();
     }
 
     public virtual void Shoot()
@@ -21,6 +24,7 @@ public class Enemy : MonoBehaviour
         GameObject bullet = Instantiate(enemyBulletPrefab, transform.position, enemyBulletPrefab.transform.rotation);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         rb.velocity = Vector2.down * bulletSpeed;
+        audioSource.PlayOneShot(shootSound);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

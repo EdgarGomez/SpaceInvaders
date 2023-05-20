@@ -4,8 +4,12 @@ public class SpecialEnemy2 : Enemy
 {
     public override void Shoot()
     {
+
         if (enemyBulletPrefab != null)
         {
+
+            MusicPlayer.instance.PlaySound(shootSound);
+
             for (int i = -2; i <= 2; i++)
             {
                 float angle = 15f * i;

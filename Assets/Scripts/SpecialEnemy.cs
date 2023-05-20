@@ -6,6 +6,9 @@ public class SpecialEnemy : Enemy
     {
         if (enemyBulletPrefab != null)
         {
+
+            MusicPlayer.instance.PlaySound(shootSound);
+
             GameObject bullet = Instantiate(enemyBulletPrefab, transform.position, Quaternion.identity);
             Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
             bulletRb.velocity = Vector2.down * bulletSpeed;

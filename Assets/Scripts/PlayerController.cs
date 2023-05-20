@@ -19,8 +19,11 @@ public class PlayerController : MonoBehaviour
     public AudioClip collisionSound;
     public AudioClip shootSound;
     public AudioClip impactSound;
+    public AudioClip missileSound;
+    public AudioClip shieldSound;
+    public AudioClip pickupSound;
     public GameObject collisionEffectPrefab;
-    private AudioSource audioSource;
+    public AudioSource audioSource;
 
     public GameObject shieldPrefab;
     private GameObject activeShield;
@@ -45,11 +48,14 @@ public class PlayerController : MonoBehaviour
         pos.x = Mathf.Clamp(pos.x, -2.5f, 2.5f);
         transform.position = pos;
 
-        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) && Time.time > nextFire)
+        if (Input.GetKey(KeyCode.W) && Time.time > nextFire)
         {
             nextFire = Time.time + fireRate;
             if (hasMissile && missileCount > 0)
             {
+                //audioSource.PlayOneShot(missileSound);
+
+                MusicPlayer.instance.PlaySound(missileSound);
                 Instantiate(missilePrefab, transform.position, Quaternion.identity);
                 missileCount--;
                 GameManager.instance.UpdateMissileCount(missileCount);
@@ -60,6 +66,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                audioSource.PlayOneShot(shootSound);
                 Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             }
         }
@@ -69,7 +76,6 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("EnemyBullet"))
         {
-            Debug.Log("Bum!");
             UpdateLifeBar(collision);
         }
     }
@@ -79,8 +85,6 @@ public class PlayerController : MonoBehaviour
 
         if (playerLives > 1 && playerLives <= 4)
         {
-            Debug.Log("Removing lifes");
-
             audioSource.PlayOneShot(impactSound);
             lifeBar[playerLives - 1].enabled = false;
             playerLives--;
@@ -113,6 +117,7 @@ public class PlayerController : MonoBehaviour
 
     public void HandlePickup(Pickup pickup)
     {
+        audioSource.PlayOneShot(pickupSound);
         switch (pickup.type)
         {
             case Pickup.PickupType.Missile:
@@ -142,6 +147,7 @@ public class PlayerController : MonoBehaviour
     }
     public void DestroyShield()
     {
+        audioSource.PlayOneShot(shieldSound);
         Destroy(activeShield);
         shields--;
         GameManager.instance.UpdateShields(shields);

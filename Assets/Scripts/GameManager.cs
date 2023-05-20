@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     public TMP_Text shieldsText;
     public TMP_Text countdownText;
     public GameObject gameOverPanel;
+    public AudioClip waveSound;
+    public AudioClip waveGo;
 
     private float score;
     public int waves;
@@ -31,6 +33,7 @@ public class GameManager : MonoBehaviour
 
     public TMP_InputField scoreInputField;
     public Button saveScoreButton;
+    private AudioSource audioSource;
 
     void Awake()
     {
@@ -44,8 +47,14 @@ public class GameManager : MonoBehaviour
         }
 
         score = 0;
-        waves = 1;
+        waves = 0;
         enemies = 0;
+        Time.timeScale = 1;
+    }
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -83,10 +92,12 @@ public class GameManager : MonoBehaviour
         int countdown = 3;
         while (countdown > 0)
         {
+            audioSource.PlayOneShot(waveSound);
             countdownText.text = "Next Wave " + countdown.ToString();
             yield return new WaitForSeconds(1);
             countdown--;
         }
+        audioSource.PlayOneShot(waveGo);
         countdownText.text = "GO!";
         yield return new WaitForSeconds(1);
         countdownText.gameObject.SetActive(false);

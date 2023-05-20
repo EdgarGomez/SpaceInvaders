@@ -8,6 +8,8 @@ public class EnemyController : MonoBehaviour
     public GameObject specialEnemyPrefab;
     public GameObject specialEnemy2Prefab;
     public GameObject enemyHolder;
+    public AudioClip stepDownSound;
+
     public float speed;
     public float stepDown;
     public float waveCooldown = 3f;
@@ -23,13 +25,16 @@ public class EnemyController : MonoBehaviour
     private bool preparingNewWave = false;
 
     private float shootingInterval = 1f;
+    private AudioSource audioSource;
 
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         float screenHalfWidth = Camera.main.aspect * Camera.main.orthographicSize;
         minX = -screenHalfWidth + enemyHalfWidth;
         maxX = screenHalfWidth - enemyHalfWidth;
-        SpawnEnemies();
+        //SpawnEnemies();
+        StartCoroutine(StartNextWave());
         StartCoroutine(ShootingRoutine());
     }
 
@@ -92,7 +97,7 @@ public class EnemyController : MonoBehaviour
         Vector3 targetPosition = startPosition + Vector3.down * stepDown;
         float elapsedTime = 0f;
         float transitionTime = 1f;
-
+        audioSource.PlayOneShot(stepDownSound);
         foreach (Transform child in enemyHolder.transform)
         {
             Enemy enemy = child.GetComponent<Enemy>();
@@ -119,6 +124,7 @@ public class EnemyController : MonoBehaviour
                 enemy.HideTurboFire();
             }
         }
+        audioSource.Stop();
     }
 
     public void HandleBorderCollision()
@@ -134,7 +140,6 @@ public class EnemyController : MonoBehaviour
         yield return new WaitForSeconds(waveCooldown);
         speed += difficultyIncrease;
         stepDown += difficultyIncrease;
-        // Reset position of enemyHolder
         enemyHolder.transform.position = new Vector3(0, 4, 0);
         shootingInterval = Mathf.Max(0.2f, shootingInterval - 0.1f);
         SpawnEnemies();

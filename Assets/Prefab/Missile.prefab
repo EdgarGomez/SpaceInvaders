@@ -160,4 +160,7 @@ MonoBehaviour:
   speed: 10
   explosionPrefab: {fileID: 8206427761497115597, guid: 6ad742f0a616d77458edcd5aefef719e, type: 3}
   isMissile: 1
-  explosionRadius: 1
+  explosionRadius: 1.2
+  direction: {x: 0, y: 1}
+  explosionSound: {fileID: 8300000, guid: a6497c8a97b3e55479094b46fc63fc8e, type: 3}
+  playerController: {fileID: 0}

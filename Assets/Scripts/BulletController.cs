@@ -7,7 +7,14 @@ public class BulletController : MonoBehaviour
     public bool isMissile = false;
     public float explosionRadius = 1f;
     public Vector2 direction = Vector2.up;
+    private AudioSource audioSource;
+    public AudioClip explosionSound;
+    public PlayerController playerController;
 
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void Update()
     {
@@ -24,7 +31,6 @@ public class BulletController : MonoBehaviour
         if (other.gameObject.CompareTag("Enemy"))
         {
             GameManager.instance.IncrementEnemies();
-
             if (isMissile)
             {
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
@@ -32,10 +38,13 @@ public class BulletController : MonoBehaviour
                 {
                     if (collider.gameObject.CompareTag("Enemy"))
                     {
+                        GameManager.instance.IncrementEnemies();
+
                         Destroy(collider.gameObject);
                     }
                 }
             }
+            MusicPlayer.instance.PlaySound(explosionSound);
 
             Instantiate(explosionPrefab, other.gameObject.transform.position, Quaternion.identity);
             Destroy(other.gameObject);
@@ -43,6 +52,7 @@ public class BulletController : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Border"))
         {
+
             Destroy(gameObject);
         }
     }
